@@ -93,9 +93,9 @@ var ParsePatches = {
     if (!Parse.Object.prototype.toPlainObject) {
       Parse.Object.prototype.toPlainObject = patches.toPlainObject;
     }
-    if (!Parse.Query.prototype.subscribe) {
+    // if (!Parse.Query.prototype.subscribe) {
       Parse.Query.prototype.subscribe = patches.subscribe;
-    }
+    // }
     if (!Parse.Query.prototype.observeOne) {
       Parse.Query.prototype.observeOne = patches.observeOne;
     }
