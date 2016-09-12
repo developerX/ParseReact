@@ -56,3 +56,25 @@ observe: function() {
   };
 }
 ```
+# Subscribing to Complex Queries
+Not all queries can be written in a single line of code.  To effectively subscribe a component to a complex Parse query it is recommended that you build them inside the observe method before constructing and returning your map of observations.  
+
+```js
+observe: function() {
+    var userQuery = new Parse.Query(Parse.User);
+    userQuery.equalTo("objectId", id);
+
+    var Comments = Parse.Object.extend("Comments");
+
+    var commentQuery = new Parse.Query(Comments);
+    commentQuery.matchesQuery("user_reference", userQuery);
+    activityQuery.include("comment");
+    commentQuery.descending("createdAt");
+
+    return {
+    	comments: commentQuery
+    };
+ }
+ ```
+
+The example above illustrates the need for multiple lines of code being used to create your map of observations.  The first query is setup to find a specific user based upon their ```objectId```. The second query is setup to match all of the comments for the user that will be returned in the first query.  The result of this relational query is then returned and associated with the name ```comments```.
