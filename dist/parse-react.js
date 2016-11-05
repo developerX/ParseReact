@@ -1,6 +1,6 @@
 /*
  *  Parse + React
- *  v0.5.3
+ *  v0.5.4
  */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ParseReact = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 /*
@@ -498,11 +498,11 @@ var Mixin = {
     var observed = this.observe(props, state);
     var newSubscriptions = {};
     for (var name in observed) {
-      if (!observed[name].subscribe) {
+      if (!observed[name].enroll) {
         warning('The observation value "' + name + '" is not subscribable. ' + 'Make sure you are returning the Query, and not fetching it yourself.');
         continue;
       }
-      newSubscriptions[name] = observed[name].subscribe({
+      newSubscriptions[name] = observed[name].enroll({
         onNext: this._receiveData.bind(this, name),
         onError: observed[name] instanceof Parse.Query ? this._receiveError.bind(this, name) : function () {}
       });
@@ -1774,11 +1774,11 @@ exports['default'] = function (React) {
         var observed = this.observe(props, state);
         var newSubscriptions = {};
         for (var name in observed) {
-          if (!observed[name].subscribe) {
+          if (!observed[name].enroll) {
             warning('The observation value "' + name + '" is not subscribable. ' + 'Make sure you are returning the Query, and not fetching it yourself.');
             continue;
           }
-          newSubscriptions[name] = observed[name].subscribe({
+          newSubscriptions[name] = observed[name].enroll({
             onNext: this._receiveData.bind(this, name),
             onError: observed[name] instanceof Parse.Query ? this._receiveError.bind(this, name) : function () {}
           });
@@ -1870,7 +1870,7 @@ var patches = {
   /**
    * Allows a Parse.Query to be observed by a React component
    */
-  subscribe: function subscribe(callbacks) {
+  enroll: function enroll(callbacks) {
     return SubscriptionManager.subscribeToQuery(this, callbacks);
   },
 
@@ -1922,9 +1922,9 @@ var ParsePatches = {
     if (!Parse.Object.prototype.toPlainObject) {
       Parse.Object.prototype.toPlainObject = patches.toPlainObject;
     }
-    // if (!Parse.Query.prototype.subscribe) {
-    Parse.Query.prototype.subscribe = patches.subscribe;
-    // }
+    if (!Parse.Query.prototype.enroll) {
+      Parse.Query.prototype.enroll = patches.enroll;
+    }
     if (!Parse.Query.prototype.observeOne) {
       Parse.Query.prototype.observeOne = patches.observeOne;
     }

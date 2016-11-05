@@ -130,12 +130,12 @@ export default function(React) {
       var observed = this.observe(props, state);
       var newSubscriptions = {};
       for (var name in observed) {
-        if (!observed[name].subscribe) {
+        if (!observed[name].enroll) {
           warning('The observation value "' + name + '" is not subscribable. ' +
           'Make sure you are returning the Query, and not fetching it yourself.');
           continue;
         }
-        newSubscriptions[name] = observed[name].subscribe({
+        newSubscriptions[name] = observed[name].enroll({
           onNext: this._receiveData.bind(this, name),
           onError: (observed[name] instanceof Parse.Query) ?
             this._receiveError.bind(this, name) : function() { }
